@@ -10,6 +10,8 @@ Terraform infrastructure work for Assignment 04.
 - `A04/jenkins/plugins.txt`: Jenkins plugin inventory for Task 1.
 - `A04/jenkins/setup.md`: Jenkins controller, agent, credentials, and plugin setup notes.
 - `A04/jenkins/sanity-check.Jenkinsfile`: sanity pipeline that runs on the `linux-agent` node.
+- `A04/app`: sample Node.js attendance API with unit and integration tests.
+- `A04/jenkins/unitIntTest.Jenkinsfile`: Jenkins pipeline for build, unit tests, integration tests, and JUnit report publishing.
 
 ## Commands
 
@@ -51,3 +53,18 @@ terraform apply
 ```
 
 After apply, use the `jenkins_url`, `jenkins_controller_public_ip`, and `jenkins_agent_private_ip` outputs to finish the Jenkins UI setup described in `A04/jenkins/setup.md`.
+
+Run the application test suite locally:
+
+```powershell
+cd A04\app
+npm ci
+npm run build
+npm run test:unit
+npm run test:integration
+```
+
+The generated JUnit reports are stored under:
+
+- `A04/app/reports/unit/junit.xml`
+- `A04/app/reports/integration/junit.xml`
