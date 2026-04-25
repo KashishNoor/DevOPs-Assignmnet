@@ -6,6 +6,10 @@ Terraform infrastructure work for Assignment 04.
 
 - `A04/jenkins/terraform/00-bootstrap-state`: creates the S3 state bucket and locking resources.
 - `A04/jenkins/terraform/01-base-infra`: creates the base AWS VPC, subnets, internet gateway, NAT gateway, and route tables.
+- `A04/jenkins/terraform/02-jenkins-task1`: provisions the Jenkins controller in the public subnet and a Linux build agent in the private subnet.
+- `A04/jenkins/plugins.txt`: Jenkins plugin inventory for Task 1.
+- `A04/jenkins/setup.md`: Jenkins controller, agent, credentials, and plugin setup notes.
+- `A04/jenkins/sanity-check.Jenkinsfile`: sanity pipeline that runs on the `linux-agent` node.
 
 ## Commands
 
@@ -33,3 +37,17 @@ terraform plan
 terraform apply
 ```
 
+Then run Jenkins Task 1 infrastructure:
+
+```powershell
+cd ..\02-jenkins-task1
+Copy-Item terraform.tfvars.example terraform.tfvars
+# Edit terraform.tfvars and set my_ip_cidr to your public IP, for example 1.2.3.4/32
+terraform init -reconfigure
+terraform fmt
+terraform validate
+terraform plan
+terraform apply
+```
+
+After apply, use the `jenkins_url`, `jenkins_controller_public_ip`, and `jenkins_agent_private_ip` outputs to finish the Jenkins UI setup described in `A04/jenkins/setup.md`.

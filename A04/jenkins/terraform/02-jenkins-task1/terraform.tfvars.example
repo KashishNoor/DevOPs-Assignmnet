@@ -1,0 +1,10 @@
+aws_region   = "eu-north-1"
+project_name = "kashish"
+
+# Replace with your current public IP in CIDR format.
+my_ip_cidr = "1.2.3.4/32"
+
+controller_instance_type = "t3.small"
+agent_instance_type      = "t3.micro"
+key_name                 = "kashish-jenkins-key"
+
