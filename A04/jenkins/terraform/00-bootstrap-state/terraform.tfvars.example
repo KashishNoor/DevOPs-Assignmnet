@@ -1,0 +1,4 @@
+aws_region        = "eu-north-1"
+state_bucket_name = "kashish-devops-tfstate-188876037443"
+lock_table_name   = "kashish-terraform-state-locking"
+
