@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites name="jest tests" tests="8" failures="0" errors="0" time="0.799">
+  <testsuite name="attendanceService unit tests" errors="0" failures="0" skipped="0" timestamp="2026-04-25T13:49:29" time="0.666" tests="8">
+    <testcase classname="attendanceService unit tests validates correct student ID format" name="attendanceService unit tests validates correct student ID format" time="0.003">
+    </testcase>
+    <testcase classname="attendanceService unit tests rejects incorrect student ID format" name="attendanceService unit tests rejects incorrect student ID format" time="0.001">
+    </testcase>
+    <testcase classname="attendanceService unit tests validates allowed attendance statuses" name="attendanceService unit tests validates allowed attendance statuses" time="0.001">
+    </testcase>
+    <testcase classname="attendanceService unit tests rejects unsupported attendance status" name="attendanceService unit tests rejects unsupported attendance status" time="0.001">
+    </testcase>
+    <testcase classname="attendanceService unit tests marks attendance successfully" name="attendanceService unit tests marks attendance successfully" time="0.047">
+    </testcase>
+    <testcase classname="attendanceService unit tests throws error for invalid student ID" name="attendanceService unit tests throws error for invalid student ID" time="0.036">
+    </testcase>
+    <testcase classname="attendanceService unit tests summarizes attendance records correctly" name="attendanceService unit tests summarizes attendance records correctly" time="0.003">
+    </testcase>
+    <testcase classname="attendanceService unit tests gets attendance records by student ID" name="attendanceService unit tests gets attendance records by student ID" time="0">
+    </testcase>
+  </testsuite>
+</testsuites>
