@@ -1,0 +1,4 @@
+# Task 5 Trivy ignore file.
+# No CVEs are ignored in the passing build.
+# If a CVE is ignored later, add:
+# CVE-ID  # reason, owner, date, and why the risk is acceptable
