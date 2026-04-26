@@ -45,7 +45,12 @@ pipeline {
                     rm -rf .terraform-ci
                     mkdir -p "${TF_CI_DIR}"
 
-                    find "${TF_DIR}" -maxdepth 1 -type f \( -name '*.tf' -o -name '*.tfvars' \) ! -name 'versions.tf' -exec cp {} "${TF_CI_DIR}/" \;
+                    cp "${TF_DIR}"/*.tf "${TF_CI_DIR}/"
+                    if ls "${TF_DIR}"/*.tfvars >/dev/null 2>&1; then
+                        cp "${TF_DIR}"/*.tfvars "${TF_CI_DIR}/"
+                    fi
+                    rm -f "${TF_CI_DIR}/versions.tf"
+
                     awk '
                         /backend "s3" {/ { skip = 1; depth = 1; next }
                         skip {
