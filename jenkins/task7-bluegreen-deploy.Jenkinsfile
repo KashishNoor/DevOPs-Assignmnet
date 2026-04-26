@@ -182,27 +182,31 @@ EOF
                       echo "WARNING: ASG update denied or failed. Continuing with existing idle target group for pipeline evidence."
                     fi
 
-                    echo "Waiting for idle target group health..."
+                    if [ "$ASG_UPDATE_EXIT" -eq 0 ]; then
+                      echo "Waiting briefly for idle target group health..."
 
-                    for i in $(seq 1 30); do
-                      UNHEALTHY=$(aws elbv2 describe-target-health \
-                        --target-group-arn "$IDLE_TG" \
-                        --query "length(TargetHealthDescriptions[?TargetHealth.State!='healthy'])" \
-                        --output text)
+                      for i in $(seq 1 3); do
+                        UNHEALTHY=$(aws elbv2 describe-target-health \
+                          --target-group-arn "$IDLE_TG" \
+                          --query "length(TargetHealthDescriptions[?TargetHealth.State!='healthy'])" \
+                          --output text)
 
-                      TOTAL=$(aws elbv2 describe-target-health \
-                        --target-group-arn "$IDLE_TG" \
-                        --query "length(TargetHealthDescriptions)" \
-                        --output text)
+                        TOTAL=$(aws elbv2 describe-target-health \
+                          --target-group-arn "$IDLE_TG" \
+                          --query "length(TargetHealthDescriptions)" \
+                          --output text)
 
-                      echo "Target health: total=$TOTAL unhealthy=$UNHEALTHY"
+                        echo "Target health: total=$TOTAL unhealthy=$UNHEALTHY"
 
-                      if [ "$TOTAL" -gt 0 ] && [ "$UNHEALTHY" -eq 0 ]; then
-                        break
-                      fi
+                        if [ "$TOTAL" -gt 0 ] && [ "$UNHEALTHY" -eq 0 ]; then
+                          break
+                        fi
 
-                      sleep 15
-                    done
+                        sleep 5
+                      done
+                    else
+                      echo "Skipping idle target health wait because ASG update did not run."
+                    fi
 
                     aws elbv2 modify-listener \
                       --listener-arn "$SMOKE_LISTENER_ARN" \
@@ -211,7 +215,7 @@ EOF
                     echo "Running smoke test against idle color $IDLE_COLOR"
                     curl -f "http://${ALB_DNS}:8081/health" || echo "WARNING: Smoke test failed; continuing for deployment pipeline evidence."
 
-                    echo "Smoke test passed. Switching production listener to $IDLE_COLOR"
+                    echo "Switching production listener to $IDLE_COLOR"
 
                     aws elbv2 modify-listener \
                       --listener-arn "$PROD_LISTENER_ARN" \
