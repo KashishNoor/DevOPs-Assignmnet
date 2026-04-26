@@ -26,7 +26,10 @@ ENV PORT=3000
 
 WORKDIR /app
 
-RUN apk upgrade --no-cache
+RUN apk upgrade --no-cache \
+    && rm -rf /usr/local/lib/node_modules/npm \
+              /usr/local/lib/node_modules/corepack \
+              /opt/yarn-v*
 
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
