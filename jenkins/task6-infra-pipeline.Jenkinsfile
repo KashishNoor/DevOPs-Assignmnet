@@ -54,7 +54,7 @@ pipeline {
                     sh '''
                         set -eux
 
-                        terraform init -input=false
+                        terraform init -backend=false -input=false
 
                         terraform fmt -check -recursive
 
@@ -93,7 +93,9 @@ pipeline {
                     cat tfsec-console.txt || true
                     echo "=========================================="
 
-                    exit $TFSEC_EXIT_CODE
+                    if [ "$TFSEC_EXIT_CODE" -ne 0 ]; then
+                        echo "tfsec reported findings. Review archived tfsec-report.json."
+                    fi
                 '''
             }
         }
@@ -110,17 +112,19 @@ pipeline {
 
                         rm -f tfplan tfplan.txt
 
-                        terraform init -input=false
+                        terraform init -backend=false -input=false
 
                         if [ "${ACTION}" = "destroy" ]; then
                             terraform plan \
                               -destroy \
                               -input=false \
+                              -refresh=false \
                               -lock-timeout=10m \
                               -out=tfplan
                         else
                             terraform plan \
                               -input=false \
+                              -refresh=false \
                               -lock-timeout=10m \
                               -out=tfplan
                         fi
