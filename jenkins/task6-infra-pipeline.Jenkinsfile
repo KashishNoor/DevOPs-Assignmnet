@@ -22,6 +22,7 @@ pipeline {
 
     environment {
         TF_DIR = 'jenkins/terraform/01-base-infra'
+        TF_CI_DIR = '.terraform-ci/01-base-infra'
         TF_IN_AUTOMATION = 'true'
         CURRENT_STAGE = 'Pipeline started'
     }
@@ -40,6 +41,23 @@ pipeline {
                     git rev-parse --short HEAD
                     echo "Terraform directory: ${TF_DIR}"
                     test -d "${TF_DIR}"
+
+                    rm -rf .terraform-ci
+                    mkdir -p "${TF_CI_DIR}"
+
+                    find "${TF_DIR}" -maxdepth 1 -type f \( -name '*.tf' -o -name '*.tfvars' \) ! -name 'versions.tf' -exec cp {} "${TF_CI_DIR}/" \;
+                    awk '
+                        /backend "s3" {/ { skip = 1; depth = 1; next }
+                        skip {
+                            depth += gsub(/{/, "{")
+                            depth -= gsub(/}/, "}")
+                            if (depth == 0) { skip = 0 }
+                            next
+                        }
+                        { print }
+                    ' "${TF_DIR}/versions.tf" > "${TF_CI_DIR}/versions.tf"
+
+                    echo "Prepared backend-free Terraform directory: ${TF_CI_DIR}"
                 '''
             }
         }
@@ -50,7 +68,7 @@ pipeline {
                     env.CURRENT_STAGE = 'Fmt & Validate'
                 }
 
-                dir("${env.TF_DIR}") {
+                dir("${env.TF_CI_DIR}") {
                     sh '''
                         set -eux
 
@@ -107,7 +125,7 @@ pipeline {
                     env.CURRENT_STAGE = 'Plan'
                 }
 
-                dir("${env.TF_DIR}") {
+                dir("${env.TF_CI_DIR}") {
                     sh '''
                         set -eux
 
@@ -169,7 +187,7 @@ pipeline {
                     env.CURRENT_STAGE = 'Apply/Destroy'
                 }
 
-                dir("${env.TF_DIR}") {
+                dir("${env.TF_CI_DIR}") {
                     sh '''
                         set -eux
 
