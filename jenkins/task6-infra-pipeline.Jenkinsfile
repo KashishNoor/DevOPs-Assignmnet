@@ -196,10 +196,12 @@ pipeline {
                     sh '''
                         set -eux
 
-                        terraform apply \
-                          -input=false \
-                          -lock-timeout=10m \
-                          tfplan
+                        test -f tfplan
+                        terraform show -no-color tfplan > tfplan.txt
+                        cat tfplan.txt
+
+                        echo "Dry-run ${ACTION} completed successfully."
+                        echo "Real AWS ${ACTION} is skipped because the Jenkins agent role does not have EC2/VPC permissions."
                     '''
                 }
             }
