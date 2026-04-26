@@ -17,6 +17,7 @@ pipeline {
         CURRENT_STAGE = 'Pipeline started'
         // Create this credential in Jenkins as a "Secret text" (example id: sonarqube-token)
         SONAR_TOKEN = credentials('sonarqube-token')
+        NODE_IMAGE = 'node:20-bullseye'
     }
 
     stages {
@@ -31,9 +32,15 @@ pipeline {
             steps {
                 script { env.CURRENT_STAGE = 'Build & Test' }
                 dir("${env.APP_DIR}") {
-                    sh 'npm ci'
-                    sh 'npm run build'
-                    sh 'npm run test:coverage'
+                    // Run Node/npm inside a container so the agent doesn't need npm installed.
+                    sh '''
+                        set -eux
+                        docker run --rm \
+                          -v "$(pwd):/work" \
+                          -w /work \
+                          "${NODE_IMAGE}" \
+                          bash -lc "npm ci && npm run build && npm run test:coverage"
+                    '''
                 }
             }
         }
