@@ -226,7 +226,11 @@ EOF
 
                     echo "{\"timestamp\":\"$TIMESTAMP\",\"git_sha\":\"${SHORT_SHA}\",\"image_tag\":\"${SHORT_SHA}\",\"previous_color\":\"$LIVE_COLOR\",\"new_color\":\"$IDLE_COLOR\",\"result\":\"$RESULT\"}" > deploy-entry.jsonl
 
-                    aws s3 cp "s3://${DEPLOY_LOG_BUCKET}/${DEPLOY_LOG_KEY}" deployments-existing.jsonl || true
+                    aws s3 cp "s3://${DEPLOY_LOG_BUCKET}/${DEPLOY_LOG_KEY}" deployments-existing.jsonl 2>/dev/null || true
+                    if [ ! -f deployments-existing.jsonl ]; then
+                      : > deployments-existing.jsonl
+                    fi
+
                     cat deployments-existing.jsonl deploy-entry.jsonl > deployments-updated.jsonl
                     aws s3 cp deployments-updated.jsonl "s3://${DEPLOY_LOG_BUCKET}/${DEPLOY_LOG_KEY}"
                 '''
