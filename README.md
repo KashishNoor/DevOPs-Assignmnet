@@ -68,3 +68,5 @@ The generated JUnit reports are stored under:
 
 - `A04/app/reports/unit/junit.xml`
 - `A04/app/reports/integration/junit.xml`
+
+Webhook trigger test - 2026-04-25 21:44:28 +05:00
