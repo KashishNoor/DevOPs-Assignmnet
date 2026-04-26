@@ -131,11 +131,12 @@ docker ps
 EOF
 
                     USER_DATA_B64=$(base64 -w 0 user-data-${IDLE_COLOR}.sh)
+                    printf '{"UserData":"%s"}' "$USER_DATA_B64" > launch-template-data.json
 
                     NEW_LT_VERSION=$(aws ec2 create-launch-template-version \
                       --launch-template-id "$IDLE_LT" \
                       --source-version '$Latest' \
-                      --launch-template-data "{\"UserData\":\"$USER_DATA_B64\"}" \
+                      --launch-template-data file://launch-template-data.json \
                       --query "LaunchTemplateVersion.VersionNumber" \
                       --output text)
 
