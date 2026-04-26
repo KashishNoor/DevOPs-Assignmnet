@@ -54,6 +54,7 @@ pipeline {
                     sh '''
                         set -eux
 
+                        rm -rf .terraform
                         terraform init -backend=false -input=false
 
                         terraform fmt -check -recursive
@@ -111,6 +112,7 @@ pipeline {
                         set -eux
 
                         rm -f tfplan tfplan.txt
+                        rm -rf .terraform
 
                         terraform init -backend=false -input=false
 
