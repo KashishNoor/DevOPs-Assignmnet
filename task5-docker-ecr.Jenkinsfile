@@ -82,11 +82,14 @@ pipeline {
 
                     mkdir -p trivy-reports
 
+                    set +e
                     docker run --rm \
                       -v /var/run/docker.sock:/var/run/docker.sock \
+                      -v trivy-cache:/root/.cache/trivy \
                       -v "$PWD:/work" \
                       aquasec/trivy:latest image \
                       --timeout 10m \
+                      --scanners vuln \
                       --ignorefile /work/${APP_DIR}/.trivyignore \
                       --severity HIGH,CRITICAL \
                       --ignore-unfixed \
@@ -94,8 +97,12 @@ pipeline {
                       --format table \
                       --output /work/trivy-reports/trivy-image-report.txt \
                       ${IMAGE_NAME}:${SHORT_SHA}
+                    TRIVY_EXIT=$?
+                    set -e
 
+                    echo "---- Trivy HIGH/CRITICAL vulnerability report ----"
                     cat trivy-reports/trivy-image-report.txt
+                    exit ${TRIVY_EXIT}
                 '''
             }
         }
